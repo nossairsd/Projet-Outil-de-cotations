@@ -1,7 +1,7 @@
 // User Roles
 export type UserRole = 'ADMIN' | 'DEMANDEUR' | 'VALIDATEUR' | 'RESPONSABLE'
 
-export type UserStatus = 'active' | 'inactive'
+export type UserStatus = 'ACTIVE' | 'INACTIVE' | 'PENDING'  // Majuscules
 
 // User interface
 export interface User {
