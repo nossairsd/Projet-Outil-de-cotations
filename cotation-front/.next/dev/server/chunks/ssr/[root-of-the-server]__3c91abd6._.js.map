@@ -1,0 +1,6 @@
+{
+  "version": 3,
+  "sources": [],
+  "sections": [
+    {"offset": {"line": 18, "column": 0}, "map": {"version":3,"sources":["file:///C:/Users/KOCF4M5/OneDrive%20-%20Kohler%20Co/Bureau/Projet-Outil-de-cotations/cotation-front/src/app/dashboard/page.tsx"],"sourcesContent":["import { redirect } from 'next/navigation'\n\n// Redirect to admin dashboard by default\n// In production, this would check user role and redirect accordingly\nexport default function DashboardPage() {\n  redirect('/dashboard/admin')\n}\n"],"names":[],"mappings":";;;;AAAA;AAAA;;AAIe,SAAS;IACtB,IAAA,sNAAQ,EAAC;AACX"}}]
+}
