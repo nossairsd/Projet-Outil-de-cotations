@@ -1,0 +1,40 @@
+version: "3.8"
+
+services:
+  postgres:
+    image: postgres:16-alpine
+    container_name: quotation-db
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: Nossair123
+      POSTGRES_DB: quotation_db
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+
+  cotation-server:
+    build: ./cotation-server
+    container_name: cotation-server
+    ports:
+      - "3000:3000"
+    environment:
+      - DATABASE_URL=postgresql://postgres:Nossair123@postgres:5432/quotation_db?schema=public
+      - PORT=3000
+      - NODE_TLS_REJECT_UNAUTHORIZED=0
+    volumes:
+      - ./cotation-server/src:/app/src
+      - ./cotation-server/prisma:/app/prisma
+      - /app/node_modules
+    depends_on:
+      postgres:
+        condition: service_healthy
+
+# ICI, au niveau racine (pas indenté dans services)
+volumes:
+  postgres_data:
