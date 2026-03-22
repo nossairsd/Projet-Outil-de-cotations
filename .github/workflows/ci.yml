@@ -36,6 +36,7 @@ jobs:
         working-directory: ./cotation-server
 
     env:
+      FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: true   # ← Supprime warning Node.js 20
       DATABASE_URL: "postgresql://postgres:password@localhost:5432/test_cotation_db?schema=public"
       JWT_SECRET: "test-secret-key-for-ci"
       NODE_ENV: "test"
@@ -68,7 +69,11 @@ jobs:
         run: npx prisma migrate deploy
 
       - name: Run tests with coverage
-        run: npm test
+        run: npm test   # ← Doit inclure --coverage dans package.json
+
+      - name: Check coverage directory
+        if: always()
+        run: ls -la coverage/ 2>/dev/null || echo "No coverage generated"
 
       - name: Upload coverage report
         if: always()
