@@ -16,12 +16,27 @@ jobs:
   test:
     runs-on: ubuntu-latest
 
+    services:
+      postgres:
+        image: postgres:15
+        env:
+          POSTGRES_USER: postgres
+          POSTGRES_PASSWORD: password
+          POSTGRES_DB: test_cotation_db
+        ports:
+          - 5432:5432
+        options: >-
+          --health-cmd pg_isready
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+
     defaults:
       run:
         working-directory: ./cotation-server
 
     env:
-      DATABASE_URL: "file:./test.db"
+      DATABASE_URL: "postgresql://postgres:Nossair123@@localhost:5432/test_cotation_db?schema=public"
       JWT_SECRET: "test-secret-key-for-ci"
       NODE_ENV: "test"
 
@@ -29,12 +44,10 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v4
 
-      # CORRECTION: Supprimer "cache: false" complètement
       - name: Setup Node.js
         uses: actions/setup-node@v4
         with:
           node-version: '24'
-          # PAS DE LIGNE CACHE DU TOUT
 
       - name: Install dependencies
         run: npm ci
@@ -47,12 +60,6 @@ jobs:
 
       - name: Run tests with coverage
         run: npm test
-
-      - name: Check coverage directory
-        if: always()
-        run: |
-          ls -la
-          ls -la coverage/ 2>/dev/null || echo "Coverage folder not found"
 
       - name: Upload coverage report
         if: always()
