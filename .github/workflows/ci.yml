@@ -5,10 +5,12 @@ on:
     branches: [main, develop]
     paths:
       - 'cotation-server/**'
+      - '.github/workflows/**'      # ← AJOUTÉ : déclencher si workflow change
   pull_request:
     branches: [main, develop]
     paths:
       - 'cotation-server/**'
+      - '.github/workflows/**'      # ← AJOUTÉ
 
 jobs:
   test:
@@ -16,7 +18,7 @@ jobs:
 
     defaults:
       run:
-        working-directory: ./cotation-server
+        working-directory: ./cotation-server    # ← Reste correct
 
     steps:
       - name: Checkout code
