@@ -29,11 +29,12 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v4
 
-      # Correction 1: Supprimer complètement "cache" (pas "cache: false")
+      # CORRECTION: Supprimer "cache: false" complètement
       - name: Setup Node.js
         uses: actions/setup-node@v4
         with:
           node-version: '24'
+          # PAS DE LIGNE CACHE DU TOUT
 
       - name: Install dependencies
         run: npm ci
@@ -47,14 +48,12 @@ jobs:
       - name: Run tests with coverage
         run: npm test
 
-      # Correction 2: Vérifier que coverage existe avant upload
       - name: Check coverage directory
         if: always()
         run: |
           ls -la
           ls -la coverage/ 2>/dev/null || echo "Coverage folder not found"
 
-      # Correction 3: Path relatif depuis working-directory
       - name: Upload coverage report
         if: always()
         uses: actions/upload-artifact@v4
