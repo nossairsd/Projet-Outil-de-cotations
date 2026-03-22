@@ -24,6 +24,7 @@ jobs:
       DATABASE_URL: "file:./test.db"
       JWT_SECRET: "test-secret-key-for-ci"
       NODE_ENV: "test"
+      FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: true
 
     steps:
       - name: Checkout code
@@ -33,9 +34,7 @@ jobs:
         uses: actions/setup-node@v4
         with:
           node-version: '24'
-          cache: 'npm'
-          # Correction 1: chemin relatif depuis root, pas depuis working-directory
-          cache-dependency-path: 'cotation-server/package-lock.json'
+          cache: false  # Désactivé pour éviter l'erreur de path
 
       - name: Install dependencies
         run: npm ci
@@ -43,19 +42,18 @@ jobs:
       - name: Generate Prisma Client
         run: npx prisma generate
 
-      - name: Run Prisma migrations (Test DB)
+      - name: Run Prisma migrations
         run: npx prisma migrate deploy
 
-      - name: Run tests with verbose output
-        run: npm test -- --reporter=verbose
+      - name: Run tests with coverage
+        run: npm test  # Maintenant inclut --coverage
 
       - name: Upload coverage report
         if: always()
         uses: actions/upload-artifact@v4
         with:
           name: coverage-report
-          # Correction 2: chemin relatif depuis root du repo
-          path: cotation-server/coverage/
+          path: ./cotation-server/coverage/
 
       - name: Build application
         run: npm run build
