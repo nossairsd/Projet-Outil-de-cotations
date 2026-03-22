@@ -20,6 +20,12 @@ jobs:
       run:
         working-directory: ./cotation-server
 
+    # Variables d'environnement pour la base de données de test
+    env:
+      DATABASE_URL: "file:./test.db"
+      JWT_SECRET: "test-secret-key-for-ci"
+      NODE_ENV: "test"
+
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
@@ -27,9 +33,9 @@ jobs:
       - name: Setup Node.js
         uses: actions/setup-node@v4
         with:
-          node-version: '20'
-          # SUPPRIMÉ: cache-dependency-path qui cause l'erreur
-          # Le cache sera géré automatiquement
+          node-version: '24'
+          cache: 'npm'
+          cache-dependency-path: './cotation-server/package-lock.json'
 
       - name: Install dependencies
         run: npm ci
@@ -37,10 +43,18 @@ jobs:
       - name: Generate Prisma Client
         run: npx prisma generate
 
-      - name: Run tests
-        run: npm test
+      - name: Run Prisma migrations (Test DB)
+        run: npx prisma migrate deploy
+
+      - name: Run tests with verbose output
+        run: npm test -- --reporter=verbose
+        env:
+          # Forcer les variables d'env pour les tests
+          DATABASE_URL: "file:./test.db"
+          JWT_SECRET: "test-secret-key-for-ci"
 
       - name: Upload coverage report
+        if: always()  # Upload même si les tests échouent
         uses: actions/upload-artifact@v4
         with:
           name: coverage-report
